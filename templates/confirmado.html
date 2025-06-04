@@ -1,16 +1,7 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastro Confirmado - Conto Mágico</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <div class="form-container">
-        <h1>✅ Cadastro Realizado!</h1>
-        <p>Você foi cadastrado com sucesso no <strong>Conto Mágico</strong>.</p>
-        <img src="/static/img/kids-reading.png" alt="Imagem infantil" style="width: 120px; margin: 20px 0;">
-        <a href="/cadastro" class="button">Cadastrar Novo</a>
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+    <h1>Cadastro realizado com sucesso!</h1>
+    <img src="/static/img/sucesso.png" alt="Sucesso" class="illustration">
+    <p>Agora você receberá contos mágicos diariamente no seu WhatsApp!</p>
+    <a href="/cadastro">Voltar</a>
+{% endblock %}
