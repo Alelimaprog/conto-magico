@@ -7,15 +7,15 @@ def enviar_whatsapp(numero: str, texto: str, arquivo: str = None):
     try:
         account_sid = os.getenv("TWILIO_ACCOUNT_SID")
         auth_token = os.getenv("TWILIO_AUTH_TOKEN")
-        from_whatsapp_number = os.getenv("TWILIO_WHATSAPP_FROM")
-        to_whatsapp_number = f"whatsapp:{numero}"
+        from_whatsapp = os.getenv("TWILIO_WHATSAPP_FROM")  # Deve ser 'whatsapp:+14155238886'
+        to_whatsapp = f"whatsapp:{numero}"
 
         client = Client(account_sid, auth_token)
 
         message = client.messages.create(
             body=texto,
-            from_=from_whatsapp_number,
-            to=to_whatsapp_number
+            from_=from_whatsapp,
+            to=to_whatsapp
         )
 
         print(f"[OK] WhatsApp enviado. SID: {message.sid}")
