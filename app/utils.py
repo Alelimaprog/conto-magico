@@ -1,8 +1,7 @@
 import os
-import requests
 import traceback
 from openai import OpenAI
-from elevenlabs import generate, play, save
+from elevenlabs import generate, save
 from config.planilha import adicionar_historico
 from config.email import enviar_email
 from config.twilio import enviar_whatsapp
@@ -32,7 +31,8 @@ def enviar_conto_diario():
         # 3. Enviar por WhatsApp (Twilio)
         numero = os.getenv("WHATSAPP_NUMBER")
         enviado = enviar_whatsapp(numero, historia, caminho_arquivo)
-        print("[OK] WhatsApp enviado.")
+        if not enviado:
+            raise Exception("Erro no envio de WhatsApp")
 
         # 4. Registrar em planilha
         adicionar_historico(historia)
