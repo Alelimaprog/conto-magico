@@ -1,7 +1,7 @@
 import os
+import openai
 import requests
 import traceback
-from openai import OpenAI
 from elevenlabs import generate, play, save
 from config.planilha import adicionar_historico
 from config.email import enviar_email
@@ -10,13 +10,13 @@ from config.twilio import enviar_whatsapp
 def enviar_conto_diario():
     try:
         # 1. Gerar conto com OpenAI
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        openai.api_key = os.getenv("OPENAI_API_KEY")
         prompt = "Crie uma história infantil curta (até 3 minutos), com moral educativa e personagens animais."
-        resposta = client.chat.completions.create(
+        resposta = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
-        historia = resposta.choices[0].message.content.strip()
+        historia = resposta.choices[0].message['content'].strip()
         print("[OK] História gerada.")
 
         # 2. Converter para áudio com ElevenLabs
