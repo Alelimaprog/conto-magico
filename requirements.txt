@@ -3,5 +3,6 @@ uvicorn==0.23.2
 jinja2
 requests
 openai
-pydantic==2.6.4
+pydantic~=2.6.4
 elevenlabs==0.2.26
+twilio==8.10.0
