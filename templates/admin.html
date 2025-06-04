@@ -1,35 +1,14 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Painel de Usuários - Conto Mágico</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <div class="form-container">
-        <h1>📋 Lista de Usuários</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Telefone</th>
-                    <th>Data</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for u in usuarios %}
-                <tr>
-                    <td>{{ u[1] }}</td>
-                    <td>{{ u[2] }}</td>
-                    <td>{{ u[3] }}</td>
-                    <td><a href="/remover/{{ u[0] }}" class="remover">❌ Remover</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <br>
-        <a href="/cadastro" class="button">Cadastrar Novo</a>
+{% extends "base.html" %}
+{% block content %}
+    <h1>Painel de Usuários</h1>
+    <div class="card-grid">
+        {% for u in usuarios %}
+        <div class="user-card">
+            <h3>{{ u[1] }}</h3>
+            <p><strong>WhatsApp:</strong> {{ u[2] }}</p>
+            <p><strong>Cadastro:</strong> {{ u[3] }}</p>
+            <a class="btn" href="/remover/{{ u[0] }}" onclick="return confirm('Tem certeza que deseja remover este usuário?')">Remover</a>
+        </div>
+        {% endfor %}
     </div>
-</body>
-</html>
+{% endblock %}
