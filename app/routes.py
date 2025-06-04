@@ -10,7 +10,7 @@ templates = Jinja2Templates(directory="templates")
 async def homepage(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@router.get("/enviar")
+@router.get("/enviar", response_class=JSONResponse)
 async def enviar():
     sucesso = enviar_conto_diario()
     return {"status": "ok" if sucesso else "erro"}
