@@ -31,7 +31,7 @@ def enviar_conto_diario():
         # 2. Converter para áudio com ElevenLabs
         audio = generate(
             api_key=os.getenv("ELEVEN_API_KEY"),
-            voice="Rachel",
+            voice="Gloria",
             text=historia
         )
         caminho_arquivo = "/tmp/audio.mp3"
