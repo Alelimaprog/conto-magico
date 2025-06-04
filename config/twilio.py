@@ -10,6 +10,10 @@ def enviar_whatsapp(numero: str, texto: str, arquivo: str = None):
         from_whatsapp = os.getenv("TWILIO_WHATSAPP_FROM")
         to_whatsapp = f"whatsapp:{numero}"
 
+        print("[DEBUG] Enviando WhatsApp...")
+        print(f"De: {from_whatsapp} → Para: {to_whatsapp}")
+        print(f"Texto: {texto[:80]}...")
+
         client = Client(account_sid, auth_token)
 
         message = client.messages.create(
