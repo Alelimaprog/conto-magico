@@ -5,3 +5,4 @@ requests
 openai==1.14.3
 pydantic==2.6.4
 elevenlabs==0.2.26
+twilio==8.10.0
