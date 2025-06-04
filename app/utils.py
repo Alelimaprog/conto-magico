@@ -1,7 +1,6 @@
 import os
 import requests
 import traceback
-from openai import OpenAI
 from elevenlabs import generate, save
 from config.planilha import adicionar_historico
 from config.email import enviar_email
@@ -9,21 +8,26 @@ from config.twilio import enviar_whatsapp
 
 def enviar_conto_diario():
     try:
-        # 1. Gerar conto com DeepSeek API (formato compatível com OpenAI)
-        client = OpenAI(
-            api_key=os.getenv("DEEPSEEK_API_KEY"),
-            base_url="https://api.deepseek.com/v1"
-        )
-
+        # 1. Gerar conto com DeepSeek via requests
+        api_key = os.getenv("DEEPSEEK_API_KEY")
         prompt = "Crie uma história infantil curta (até 3 minutos), com moral educativa e personagens animais."
-        resposta = client.chat.completions.create(
-            model="deepseek-chat",
-            messages=[{"role": "user", "content": prompt}]
+
+        response = requests.post(
+            "https://api.deepseek.com/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "deepseek-chat",
+                "messages": [{"role": "user", "content": prompt}]
+            }
         )
-        historia = resposta.choices[0].message.content.strip()
+        response.raise_for_status()
+        historia = response.json()["choices"][0]["message"]["content"].strip()
         print("[OK] História gerada.")
 
-        # 2. Converter para áudio com ElevenLabs
+        # 2. Gerar áudio com ElevenLabs
         audio = generate(
             api_key=os.getenv("ELEVEN_API_KEY"),
             voice="Rachel",
@@ -33,18 +37,15 @@ def enviar_conto_diario():
         save(audio, caminho_arquivo)
         print("[OK] Áudio gerado e salvo.")
 
-        # 3. Enviar por WhatsApp (Twilio)
+        # 3. Simular envio por WhatsApp
         numero = os.getenv("WHATSAPP_NUMBER")
-        enviado = enviar_whatsapp(numero, historia, caminho_arquivo)
-        print("[OK] WhatsApp enviado.")
+        enviar_whatsapp(numero, historia, caminho_arquivo)
 
-        # 4. Registrar em planilha
+        # 4. Registrar na planilha
         adicionar_historico(historia)
-        print("[OK] Histórico salvo.")
 
-        # 5. Enviar e-mail de notificação
+        # 5. Enviar por e-mail
         enviar_email("História do dia enviada com sucesso!", historia)
-        print("[OK] E-mail enviado.")
 
         return {"status": "success"}
 
