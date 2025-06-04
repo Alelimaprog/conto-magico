@@ -1,7 +1,6 @@
 import os
 import requests
 import traceback
-from openai import OpenAI
 from elevenlabs import generate, save
 from config.planilha import adicionar_historico
 from config.email import enviar_email
@@ -9,38 +8,34 @@ from config.twilio import enviar_whatsapp
 
 def enviar_conto_diario():
     try:
-        # 1. Gerar conto com OpenRouter (OpenAI compatível)
+        # 1. Gerar conto com OpenRouter (modelo gratuito)
+        url = "https://openrouter.ai/api/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
             "Content-Type": "application/json"
         }
-
         data = {
-            "model": "openrouter/openai/gpt-3.5-turbo",
+            "model": "openai/gpt-3.5-turbo",
             "messages": [
-                {
-                    "role": "user",
-                    "content": "Crie uma história infantil curta (até 3 minutos), com moral educativa e personagens animais."
-                }
+                {"role": "user", "content": "Crie uma história infantil curta (até 3 minutos), com moral educativa e personagens animais."}
             ]
         }
-
-        resposta = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
+        resposta = requests.post(url, headers=headers, json=data)
         resposta.raise_for_status()
         historia = resposta.json()["choices"][0]["message"]["content"].strip()
         print("[OK] História gerada.")
 
-        # 2. Converter para áudio com ElevenLabs usando Voice ID
+        # 2. Converter para áudio com ElevenLabs usando ID da voz personalizada
         audio = generate(
             api_key=os.getenv("ELEVEN_API_KEY"),
-            voice="OB6x7EbXYlhG4DDTB1XU",  # Voice ID da voz feminina em português
+            voice="OB6x7EbXYlhG4DDTB1XU",  # ID da voz brasileira feminina infantil
             text=historia
         )
         caminho_arquivo = "/tmp/audio.mp3"
         save(audio, caminho_arquivo)
         print("[OK] Áudio gerado e salvo.")
 
-        # 3. Enviar por WhatsApp
+        # 3. Enviar por WhatsApp (Twilio)
         numero = os.getenv("WHATSAPP_NUMBER")
         enviado = enviar_whatsapp(numero, historia, caminho_arquivo)
         print("[OK] WhatsApp enviado.")
@@ -49,7 +44,7 @@ def enviar_conto_diario():
         adicionar_historico(historia)
         print("[OK] Histórico salvo.")
 
-        # 5. Enviar e-mail
+        # 5. Enviar e-mail de notificação
         enviar_email("História do dia enviada com sucesso!", historia)
         print("[OK] E-mail enviado.")
 
