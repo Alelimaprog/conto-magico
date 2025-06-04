@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 import sqlite3
+import os
 from config.twilio import enviar_whatsapp
 
 painel_router = APIRouter()
@@ -46,8 +47,8 @@ async def salvar_usuario(nome: str = Form(...), telefone: str = Form(...)):
     conn.commit()
     conn.close()
 
-    # Enviar mensagem automática
-    mensagem = "👋 Olá! Você foi cadastrado com sucesso no *Conto Mágico*. Em breve começará a receber histórias incríveis no seu WhatsApp!"
+    # WhatsApp
+    mensagem = f"Olá {nome}, seu cadastro no *Conto Mágico* foi realizado com sucesso! 🧚✨"
     enviar_whatsapp(telefone, mensagem)
 
     return RedirectResponse("/confirmado", status_code=303)
@@ -60,16 +61,15 @@ async def confirmado(request: Request):
 async def remover_usuario(usuario_id: int):
     conn = sqlite3.connect("usuarios.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT telefone FROM usuarios WHERE id=?", (usuario_id,))
-    telefone_removido = cursor.fetchone()
+    cursor.execute("SELECT nome, telefone FROM usuarios WHERE id=?", (usuario_id,))
+    usuario = cursor.fetchone()
+
+    if usuario:
+        nome, telefone = usuario
+        mensagem = f"Olá {nome}, sua assinatura no *Conto Mágico* foi cancelada. Esperamos te ver novamente! 🌟"
+        enviar_whatsapp(telefone, mensagem)
 
     cursor.execute("DELETE FROM usuarios WHERE id=?", (usuario_id,))
     conn.commit()
     conn.close()
-
-    # Enviar mensagem de remoção
-    if telefone_removido:
-        mensagem = "⚠️ Você foi removido do *Conto Mágico*. Se foi um engano, entre em contato conosco!"
-        enviar_whatsapp(telefone_removido[0], mensagem)
-
     return RedirectResponse("/painel", status_code=303)
