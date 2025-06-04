@@ -7,7 +7,7 @@ def enviar_whatsapp(numero: str, texto: str, arquivo: str = None):
     try:
         account_sid = os.getenv("TWILIO_ACCOUNT_SID")
         auth_token = os.getenv("TWILIO_AUTH_TOKEN")
-        from_whatsapp = os.getenv("TWILIO_WHATSAPP_FROM")  # Deve ser 'whatsapp:+14155238886'
+        from_whatsapp = os.getenv("TWILIO_WHATSAPP_FROM")
         to_whatsapp = f"whatsapp:{numero}"
 
         client = Client(account_sid, auth_token)
@@ -18,9 +18,9 @@ def enviar_whatsapp(numero: str, texto: str, arquivo: str = None):
             to=to_whatsapp
         )
 
-        print(f"[OK] WhatsApp enviado. SID: {message.sid}")
+        print(f"[OK] Mensagem enviada. SID: {message.sid}")
         return True
 
     except Exception as e:
-        print("[ERRO] Falha ao enviar WhatsApp:", e)
+        print(f"[ERRO] Falha ao enviar WhatsApp: {e}")
         return False
