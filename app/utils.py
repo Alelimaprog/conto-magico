@@ -1,7 +1,7 @@
 import os
-import openai
 import requests
 import traceback
+import openai
 from elevenlabs import generate, play, save
 from config.planilha import adicionar_historico
 from config.email import enviar_email
@@ -16,7 +16,7 @@ def enviar_conto_diario():
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
-        historia = resposta.choices[0].message['content'].strip()
+        historia = resposta.choices[0].message.content.strip()
         print("[OK] História gerada.")
 
         # 2. Converter para áudio com ElevenLabs
