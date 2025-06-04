@@ -1,7 +1,7 @@
 import os
 import requests
 import traceback
-import openai
+from openai import OpenAI
 from elevenlabs import generate, play, save
 from config.planilha import adicionar_historico
 from config.email import enviar_email
@@ -9,10 +9,10 @@ from config.twilio import enviar_whatsapp
 
 def enviar_conto_diario():
     try:
-        # 1. Gerar conto com OpenAI
-        openai.api_key = os.getenv("OPENAI_API_KEY")
+        # 1. Gerar conto com OpenAI (usando SDK v1)
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         prompt = "Crie uma história infantil curta (até 3 minutos), com moral educativa e personagens animais."
-        resposta = openai.ChatCompletion.create(
+        resposta = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
