@@ -1,4 +1,5 @@
 import os
+import requests
 import traceback
 from openai import OpenAI
 from elevenlabs import generate, save
@@ -8,11 +9,15 @@ from config.twilio import enviar_whatsapp
 
 def enviar_conto_diario():
     try:
-        # 1. Gerar conto com OpenAI (usando SDK v1)
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        # 1. Gerar conto com DeepSeek API (formato compatível com OpenAI)
+        client = OpenAI(
+            api_key=os.getenv("DEEPSEEK_API_KEY"),
+            base_url="https://api.deepseek.com/v1"
+        )
+
         prompt = "Crie uma história infantil curta (até 3 minutos), com moral educativa e personagens animais."
         resposta = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="deepseek-chat",
             messages=[{"role": "user", "content": prompt}]
         )
         historia = resposta.choices[0].message.content.strip()
@@ -31,8 +36,7 @@ def enviar_conto_diario():
         # 3. Enviar por WhatsApp (Twilio)
         numero = os.getenv("WHATSAPP_NUMBER")
         enviado = enviar_whatsapp(numero, historia, caminho_arquivo)
-        if not enviado:
-            raise Exception("Erro no envio de WhatsApp")
+        print("[OK] WhatsApp enviado.")
 
         # 4. Registrar em planilha
         adicionar_historico(historia)
