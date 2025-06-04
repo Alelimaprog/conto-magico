@@ -1,19 +1,27 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Cadastro</title>
+    <meta charset="UTF-8">
+    <title>Cadastro - Conto Mágico</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="form-container">
         <h1>Assine o Conto Mágico</h1>
-        <img src="/static/img/kids-reading.png" alt="Leitura infantil" class="illustration">
+        <img src="/static/img/kids-reading.png" alt="Leitura infantil" style="width: 100px; margin-bottom: 10px;">
         <form method="post" action="/cadastro">
-            <input type="text" name="nome" placeholder="Seu nome" required>
-            <input type="text" name="telefone" placeholder="WhatsApp com DDD" required>
+            <input type="text" name="nome" placeholder="Seu nome" required class="form-control">
+            <input type="text" id="telefone" name="telefone" placeholder="+55-11975025611" required class="form-control" oninput="formatarTelefone(this)">
             <button type="submit">Cadastrar</button>
         </form>
     </div>
+
+    <script>
+        function formatarTelefone(input) {
+            input.value = input.value
+                .replace(/[^\d+]/g, '')                                // remove caracteres inválidos
+                .replace(/^(\+?\d{2})(\d{2})(\d{5})(\d{4}).*/, '$1-$2$3$4'); // formata +55-11999998888
+        }
+    </script>
 </body>
 </html>
