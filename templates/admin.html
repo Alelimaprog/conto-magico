@@ -1,22 +1,23 @@
+
 <!DOCTYPE html>
 <html>
-<head><title>Painel Admin</title></head>
+<head>
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
 <body>
-  <h2>Usuários Cadastrados</h2>
-  <table border="1">
-    <tr>
-      <th>ID</th><th>Nome</th><th>Telefone</th><th>Data</th><th>Status</th><th>Ação</th>
-    </tr>
-    {% for u in usuarios %}
-    <tr>
-      <td>{{ u[0] }}</td>
-      <td>{{ u[1] }}</td>
-      <td>{{ u[2] }}</td>
-      <td>{{ u[3] }}</td>
-      <td>{{ 'Ativo' if u[4] == 1 else 'Inativo' }}</td>
-      <td><a href="/remover/{{ u[0] }}">Remover</a></td>
-    </tr>
-    {% endfor %}
-  </table>
+    <div class="container">
+        <h1>Usuários Cadastrados</h1>
+        <div class="card-grid">
+            {% for user in usuarios %}
+                <div class="user-card">
+                    <h3>{{ user[1] }}</h3>
+                    <p>Telefone: {{ user[2] }}</p>
+                    <p>Data: {{ user[3] }}</p>
+                    <a class="btn" href="/remover/{{ user[0] }}">Remover</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 </html>

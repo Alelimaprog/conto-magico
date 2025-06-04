@@ -1,16 +1,19 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cadastro</title>
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <h2>Cadastro</h2>
-  <form method="post" action="/cadastro">
-    <label>Nome:</label><br>
-    <input type="text" name="nome"><br><br>
-    <label>Telefone:</label><br>
-    <input type="text" name="telefone"><br><br>
-    <button type="submit">Cadastrar</button>
-  </form>
+    <div class="container">
+        <h1>Assine o Conto Mágico</h1>
+        <img src="/static/img/kids-reading.png" alt="Leitura infantil" class="illustration">
+        <form method="post" action="/cadastro">
+            <input type="text" name="nome" placeholder="Seu nome" required>
+            <input type="text" name="telefone" placeholder="WhatsApp com DDD" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+    </div>
 </body>
 </html>
