@@ -2,7 +2,6 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 import sqlite3
-import os
 from config.twilio import enviar_whatsapp
 
 painel_router = APIRouter()
@@ -72,4 +71,23 @@ async def remover_usuario(usuario_id: int):
     cursor.execute("DELETE FROM usuarios WHERE id=?", (usuario_id,))
     conn.commit()
     conn.close()
+    return RedirectResponse("/painel", status_code=303)
+
+@painel_router.get("/reenviar/{usuario_id}")
+async def reenviar_mensagem(usuario_id: int):
+    conn = sqlite3.connect("usuarios.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT nome, telefone FROM usuarios WHERE id=?", (usuario_id,))
+    user = cursor.fetchone()
+    conn.close()
+    if user:
+        nome, telefone = user
+        try:
+            enviar_whatsapp(
+                telefone,
+                f"Olá {nome}! Esta é uma nova tentativa de envio da sua história diária do Conto Mágico. Fique ligado nos próximos capítulos! 📚✨"
+            )
+            print(f"[OK] Mensagem reenviada para {telefone}")
+        except Exception as e:
+            print(f"[ERRO] Falha ao reenviar mensagem: {e}")
     return RedirectResponse("/painel", status_code=303)
