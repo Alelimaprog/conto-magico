@@ -5,11 +5,32 @@ body {
     padding: 0;
 }
 
-.container, .form-container {
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+    padding: 12px 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.navbar a:hover {
+    background-color: #555;
+}
+
+.container {
     max-width: 700px;
-    margin: 60px auto;
+    margin: auto;
     background: white;
-    padding: 30px 40px;
+    padding: 30px;
+    margin-top: 40px;
     border-radius: 12px;
     box-shadow: 0 0 12px rgba(0,0,0,0.1);
 }
@@ -17,8 +38,6 @@ body {
 h1 {
     text-align: center;
     color: #333;
-    margin-bottom: 25px;
-    font-size: 28px;
 }
 
 form {
@@ -34,24 +53,19 @@ input, button {
     border: 1px solid #ccc;
 }
 
-button, .button {
+button {
     background-color: #4CAF50;
     color: white;
-    border: none;
     cursor: pointer;
-    transition: 0.2s;
-    text-align: center;
-    text-decoration: none;
 }
 
-button:hover, .button:hover {
+button:hover {
     background-color: #45a049;
 }
 
 .illustration {
     max-width: 100%;
-    margin: 20px auto;
-    display: block;
+    margin: 20px 0;
 }
 
 .card-grid {
@@ -72,67 +86,29 @@ button:hover, .button:hover {
     margin: 0 0 5px;
 }
 
-.btn, .remover {
+.btn {
     display: inline-block;
-    background: crimson;
-    color: white;
     padding: 8px 12px;
     border-radius: 6px;
     text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 15px;
+.btn.remover {
+    background: crimson;
+    color: white;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
+.btn.remover:hover {
+    background: darkred;
 }
 
-th {
-    background-color: #f2f2f2;
-    color: #333;
+.btn.reenviar {
+    background: #3498db;
+    color: white;
 }
 
-/* Responsivo */
-@media (max-width: 768px) {
-    .container, .form-container {
-        margin: 20px 15px;
-        padding: 25px 20px;
-    }
-
-    .user-card {
-        width: 100%;
-    }
-
-    table, thead, tbody, th, td, tr {
-        display: block;
-    }
-
-    thead {
-        display: none;
-    }
-
-    td {
-        position: relative;
-        padding-left: 50%;
-        text-align: left;
-        border: none;
-        border-bottom: 1px solid #ddd;
-    }
-
-    td::before {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        white-space: nowrap;
-        font-weight: bold;
-        content: attr(data-label);
-        color: #555;
-    }
+.btn.reenviar:hover {
+    background: #2980b9;
 }
