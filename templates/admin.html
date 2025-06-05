@@ -1,24 +1,23 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container">
-    <img src="{{ url_for('static', path='img/admin-banner.png') }}" class="illustration" alt="Painel Conto Mágico">
-
-    <h1>Painel de Usuários</h1>
-
-    {% if usuarios %}
-        <div class="card-grid">
-            {% for usuario in usuarios %}
-                <div class="user-card">
-                    <h3>{{ usuario[1] }}</h3>
-                    <p><strong>WhatsApp:</strong> {{ usuario[2] }}</p>
-                    <p><strong>Cadastrado em:</strong> {{ usuario[3] }}</p>
-                    <a href="/remover/{{ usuario[0] }}" class="btn">Remover</a>
+    <h1>Usuários Cadastrados</h1>
+    <img src="/static/header.png" alt="Cadastro" class="illustration">
+    <div class="card-grid">
+        {% for user in usuarios %}
+        <div class="user-card">
+            <h3>{{ user[1] }}</h3>
+            <p><strong>Tel:</strong> {{ user[2] }}</p>
+            <p><strong>Cadastrado em:</strong> {{ user[3] }}</p>
+            <div class="dropdown">
+                <button class="dropbtn">⋮</button>
+                <div class="dropdown-content">
+                    <a href="/reenviar/{{ user[0] }}">Reenviar mensagem</a>
+                    <a href="/remover/{{ user[0] }}">Remover</a>
                 </div>
-            {% endfor %}
+            </div>
         </div>
-    {% else %}
-        <p>Nenhum usuário cadastrado ainda.</p>
-    {% endif %}
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}
