@@ -1,1 +1,1 @@
-# email config placeholder
+# email sending logic

@@ -1,1 +1,1 @@
-# planilha config placeholder
+# spreadsheet logic
