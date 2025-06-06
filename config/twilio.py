@@ -1,1 +1,2 @@
-# arquivo gerado
+# twilio.py
+def send_whatsapp(): pass
