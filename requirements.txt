@@ -1,4 +1,7 @@
 fastapi
 uvicorn
-python-multipart
+twilio
+python-dotenv
 jinja2
+openai
+python-multipart

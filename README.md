@@ -1,2 +1,1 @@
-# Conto Mágico
-Sistema para envio de contos via WhatsApp.
+# Conteúdo simulado para README.md
