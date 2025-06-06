@@ -1,26 +1,16 @@
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from app.utils import enviar_conto_diario
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 @router.get("/", response_class=HTMLResponse)
-async def home(request: Request):
+async def homepage(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@router.get("/cadastro", response_class=HTMLResponse)
-async def cadastro(request: Request):
-    return templates.TemplateResponse("cadastro.html", {"request": request})
-
-@router.get("/confirmado", response_class=HTMLResponse)
-async def confirmado(request: Request):
-    return templates.TemplateResponse("confirmado.html", {"request": request})
-
-@router.get("/painel", response_class=HTMLResponse)
-async def painel(request: Request):
-    return templates.TemplateResponse("admin.html", {"request": request})
-
-@router.get("/enviar", response_class=HTMLResponse)
+@router.get("/enviar", response_class=JSONResponse)
 async def enviar():
-    return HTMLResponse("<h2>Envio funcionando corretamente</h2>")
+    sucesso = enviar_conto_diario()
+    return {"status": "ok" if sucesso else "erro"}
