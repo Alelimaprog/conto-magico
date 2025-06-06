@@ -1,2 +1,2 @@
 # Conto Mágico
-Sistema de envio de contos por WhatsApp
+Sistema para envio de contos via WhatsApp.
