@@ -7,18 +7,30 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 @router.get("/", response_class=HTMLResponse)
-def home(request: Request):
+async def homepage(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @router.get("/cadastro", response_class=HTMLResponse)
-def cadastro(request: Request):
+async def exibir_cadastro(request: Request):
     return templates.TemplateResponse("cadastro.html", {"request": request})
 
-@router.post("/cadastro")
-async def processar_cadastro(request: Request, telefone: str = Form(...)):
-    await enviar_conto_diario(telefone)
+@router.post("/cadastro", response_class=HTMLResponse)
+async def processar_cadastro(request: Request, nome: str = Form(...), telefone: str = Form(...)):
+    # Aqui o cadastro seria salvo em planilha ou banco
     return templates.TemplateResponse("confirmado.html", {"request": request})
 
+@router.get("/painel", response_class=HTMLResponse)
+async def painel_admin(request: Request):
+    return templates.TemplateResponse("admin.html", {"request": request})
+
+@router.get("/admin", response_class=HTMLResponse)
+async def admin_redirect(request: Request):
+    return templates.TemplateResponse("admin.html", {"request": request})
+
 @router.get("/enviar", response_class=HTMLResponse)
-def enviar(request: Request):
-    return templates.TemplateResponse("confirmado.html", {"request": request})
+async def enviar(request: Request):
+    try:
+        enviar_conto_diario()
+        return templates.TemplateResponse("confirmado.html", {"request": request})
+    except Exception as e:
+        return HTMLResponse(content=f"Erro ao enviar: {e}", status_code=500)
