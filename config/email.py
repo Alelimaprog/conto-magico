@@ -1,2 +1,1 @@
-# email.py
-def send_email(): pass
+# email config placeholder

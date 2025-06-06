@@ -1,2 +1,1 @@
-# twilio.py
-def send_whatsapp(): pass
+# twilio config placeholder
