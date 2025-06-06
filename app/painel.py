@@ -1,1 +1,2 @@
-# arquivo gerado
+# painel.py
+print('Painel')
