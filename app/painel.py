@@ -1,1 +1,1 @@
-# painel admin placeholder
+# painel do usuário
