@@ -1,1 +1,10 @@
-<html><body>Cadastro</body></html>
+{% extends "base.html" %}
+{% block content %}
+    <h1>Cadastre-se para receber contos mágicos</h1>
+    <img src="/static/img/cadastro.png" alt="Cadastro" class="illustration">
+    <form method="post" action="/cadastro">
+        <input type="text" name="nome" placeholder="Seu nome completo" required>
+        <input type="tel" name="telefone" value="+55" pattern="^\+55\d{11}$" placeholder="+55XXXXXXXXXXX" required>
+        <button type="submit">Cadastrar</button>
+    </form>
+{% endblock %}
