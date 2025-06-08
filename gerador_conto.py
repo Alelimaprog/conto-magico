@@ -1,4 +1,3 @@
-
 import os
 import requests
 
@@ -8,7 +7,8 @@ OPENROUTER_MODEL = "mistralai/mistral-7b-instruct"
 
 def gerar_conto(mensagem_usuario):
     headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Authorization": OPENROUTER_API_KEY,  # sem "Bearer"
+        "HTTP-Referer": "https://flushimport.com.br",  # seu domínio (ou pode manter esse por enquanto)
         "Content-Type": "application/json"
     }
 
@@ -33,11 +33,4 @@ def gerar_conto(mensagem_usuario):
         return None
     except Exception as e:
         print(f"[ERRO GERAL] {e}")
-        print("Resposta recebida (provavelmente HTML):")
-        print(response.text)
         return None
-
-# Exemplo de uso:
-if __name__ == "__main__":
-    conto = gerar_conto("Crie uma história sobre um coelho e uma tartaruga que viraram amigos.")
-    print(conto)
