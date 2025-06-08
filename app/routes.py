@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
-from app.utils import enviar_mensagem_whatsapp
+from app.utils import gerar_conto, enviar_mensagem_whatsapp
 
 router = APIRouter()
 
@@ -8,12 +8,10 @@ router = APIRouter()
 def home():
     html = """
     <html>
-        <head>
-            <title>Conto Mágico</title>
-        </head>
+        <head><title>Conto Mágico</title></head>
         <body>
             <h1>Conto Mágico</h1>
-            <a href='/enviar'>Enviar mensagem</a>
+            <a href='/enviar'>Enviar história</a>
         </body>
     </html>
     """
@@ -21,6 +19,10 @@ def home():
 
 @router.get("/enviar")
 def enviar():
-    texto = "📖 História do dia do Conto Mágico! Era uma vez um coelho e uma tartaruga que aprenderam a cooperar..."
-    sucesso = enviar_mensagem_whatsapp(texto)
-    return HTMLResponse(content="✅ Enviado" if sucesso else "❌ Falhou")
+    prompt = "Crie uma história infantil curta, educativa, criativa e com uma moral positiva no final."
+    historia = gerar_conto(prompt)
+    if not historia:
+        return HTMLResponse(content="❌ Erro ao gerar história.")
+    
+    sucesso = enviar_mensagem_whatsapp("📖 História do dia do Conto Mágico:\n\n" + historia)
+    return HTMLResponse(content="✅ Enviado" if sucesso else "❌ Falha ao enviar no WhatsApp")
