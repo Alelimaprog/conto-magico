@@ -1,20 +1,26 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from gerador_conto import gerar_conto
-from config.twilio import enviar_whatsapp
-from config.settings import WHATSAPP_NUMBER
+from app.utils import enviar_mensagem_whatsapp
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 
-@router.get("/enviar", response_class=HTMLResponse)
-async def enviar(request: Request):
-    conto = gerar_conto("Crie uma história infantil curta com moral positiva.")
-    
-    if conto:
-        sucesso = enviar_whatsapp(WHATSAPP_NUMBER, conto)
-        if not sucesso:
-            conto = "Erro ao enviar mensagem via WhatsApp."
+@router.get("/")
+def home():
+    html = """
+    <html>
+        <head>
+            <title>Conto Mágico</title>
+        </head>
+        <body>
+            <h1>Conto Mágico</h1>
+            <a href='/enviar'>Enviar mensagem</a>
+        </body>
+    </html>
+    """
+    return HTMLResponse(content=html)
 
-    return templates.TemplateResponse("enviar.html", {"request": request, "conto": conto})
+@router.get("/enviar")
+def enviar():
+    texto = "📖 História do dia do Conto Mágico! Era uma vez um coelho e uma tartaruga que aprenderam a cooperar..."
+    sucesso = enviar_mensagem_whatsapp(texto)
+    return HTMLResponse(content="✅ Enviado" if sucesso else "❌ Falhou")
