@@ -1,15 +1,15 @@
 import os
 import requests
 import traceback
-from elevenlabs import generate, save
+
+from config.twilio import enviar_whatsapp
 from config.planilha import adicionar_historico
 from config.email import enviar_email
-from config.twilio import enviar_whatsapp
 
 def enviar_conto_diario():
     try:
-        # 1. Gerar conto com OpenRouter (modelo gratuito)
-        url = "https://openrouter.ai/api/v1/chat/completions"
+        # 1. Gerar história com OpenRouter (GPT)
+        url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1/chat/completions")
         headers = {
             "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
             "Content-Type": "application/json"
@@ -20,31 +20,22 @@ def enviar_conto_diario():
                 {"role": "user", "content": "Crie uma história infantil curta (até 3 minutos), com moral educativa e personagens animais."}
             ]
         }
+
         resposta = requests.post(url, headers=headers, json=data)
         resposta.raise_for_status()
         historia = resposta.json()["choices"][0]["message"]["content"].strip()
         print("[OK] História gerada.")
 
-        # 2. Converter para áudio com ElevenLabs usando ID da voz personalizada
-        audio = generate(
-            api_key=os.getenv("ELEVEN_API_KEY"),
-            voice="OB6x7EbXYlhG4DDTB1XU",  # ID da voz brasileira feminina infantil
-            text=historia
-        )
-        caminho_arquivo = "/tmp/audio.mp3"
-        save(audio, caminho_arquivo)
-        print("[OK] Áudio gerado e salvo.")
-
-        # 3. Enviar por WhatsApp (Twilio)
+        # 2. Enviar história como texto pelo WhatsApp
         numero = os.getenv("WHATSAPP_NUMBER")
-        enviado = enviar_whatsapp(numero, historia, caminho_arquivo)
+        enviado = enviar_whatsapp(numero, historia)
         print("[OK] WhatsApp enviado.")
 
-        # 4. Registrar em planilha
+        # 3. Registrar na planilha (simulada)
         adicionar_historico(historia)
         print("[OK] Histórico salvo.")
 
-        # 5. Enviar e-mail de notificação
+        # 4. Enviar e-mail de notificação (simulado)
         enviar_email("História do dia enviada com sucesso!", historia)
         print("[OK] E-mail enviado.")
 
