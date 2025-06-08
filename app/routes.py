@@ -9,8 +9,8 @@ router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL")  # deve ser https://openrouter.ai/api/v1/completions
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL")        # deve ser mistralai/mistral-7b-instruct
+OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL")
 
 def gerar_conto():
     headers = {
@@ -19,16 +19,16 @@ def gerar_conto():
     }
 
     prompt = (
-        "Você é um contador de histórias infantis. "
-        "Crie uma história curta, divertida e com uma moral no final. "
-        "Use linguagem simples, personagens cativantes e um enredo com lição positiva."
+        "Conte uma história infantil curta, divertida e com uma moral no final. "
+        "A história deve ser original, envolver animais ou crianças, e ter um enredo com aprendizado positivo."
     )
 
     payload = {
         "model": OPENROUTER_MODEL,
         "prompt": prompt,
         "max_tokens": 500,
-        "temperature": 0.8
+        "temperature": 0.9,
+        "stop": ["\n\n"]
     }
 
     try:
