@@ -19,21 +19,22 @@ def gerar_conto():
     }
 
     prompt = (
-        "Crie uma história infantil curta, divertida, com no máximo 3 parágrafos e uma moral positiva no final."
+        "Crie uma história infantil curta, divertida e com uma moral positiva no final. "
+        "A história deve ter no máximo 3 parágrafos."
     )
 
     payload = {
         "model": OPENROUTER_MODEL,
         "prompt": prompt,
         "max_tokens": 500,
-        "temperature": 0.8
+        "temperature": 0.9
     }
 
     try:
         response = requests.post(OPENROUTER_BASE_URL, json=payload, headers=headers)
         response.raise_for_status()
         data = response.json()
-        return data["choices"][0]["text"]
+        return data["choices"][0]["text"].strip()
     except Exception as e:
         print(f"[ERRO gerar_conto] {e}")
         return None
@@ -44,9 +45,7 @@ def enviar(request: Request):
     if not historia:
         return templates.TemplateResponse("erro.html", {"request": request, "mensagem": "Erro ao gerar história."})
 
-    texto = f"""📖 História do dia do Conto Mágico!
-
-{historia}"""
+    texto = f"📖 História do dia do Conto Mágico!\n\n{historia}"
 
     sucesso = enviar_mensagem_whatsapp(texto)
     if sucesso:
