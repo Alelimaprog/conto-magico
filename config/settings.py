@@ -1,8 +1,19 @@
 import os
 
-class Settings:
-    PROJECT_NAME: str = "Conto Mágico"
-    VERSION: str = "1.0.0"
-    DEBUG: bool = True
+EMAIL_ORIGEM = os.getenv("EMAIL_ORIGEM")
+EMAIL_SENHA = os.getenv("EMAIL_SENHA")
 
-settings = Settings()
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM")
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER")
+
+MERCADOPAGO_ACCESS_TOKEN = os.getenv("MERCADOPAGO_ACCESS_TOKEN")
+
+PLANILHA_ID = os.getenv("PLANILHA_ID")
+
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1/chat/completions")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "mistralai/mistral-7b-instruct")
+
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
