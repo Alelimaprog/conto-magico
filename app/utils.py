@@ -12,18 +12,27 @@ def enviar_conto_diario():
         url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1/chat/completions")
         headers = {
             "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "X-Title": "Conto Magico"
         }
         data = {
             "model": "openai/gpt-3.5-turbo",
             "messages": [
-                {"role": "user", "content": "Crie uma história infantil curta (até 3 minutos), com moral educativa e personagens animais."}
+                {
+                    "role": "user",
+                    "content": "Crie uma história infantil curta (até 3 minutos), com moral educativa e personagens animais."
+                }
             ]
         }
 
         resposta = requests.post(url, headers=headers, json=data)
-        resposta.raise_for_status()
-        historia = resposta.json()["choices"][0]["message"]["content"].strip()
+
+        if not resposta.ok:
+            print("[ERRO] OpenRouter falhou:", resposta.status_code, resposta.text)
+            return {"status": "erro_openrouter"}
+
+        json_data = resposta.json()
+        historia = json_data["choices"][0]["message"]["content"].strip()
         print("[OK] História gerada.")
 
         # 2. Enviar história como texto pelo WhatsApp
@@ -31,7 +40,7 @@ def enviar_conto_diario():
         enviado = enviar_whatsapp(numero, historia)
         print("[OK] WhatsApp enviado.")
 
-        # 3. Registrar na planilha (simulada)
+        # 3. Registrar na planilha (simulado)
         adicionar_historico(historia)
         print("[OK] Histórico salvo.")
 
