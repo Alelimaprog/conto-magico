@@ -18,19 +18,22 @@ def gerar_conto():
         "Content-Type": "application/json"
     }
 
+    prompt = (
+        "Crie uma história infantil curta, divertida, com no máximo 3 parágrafos e uma moral positiva no final."
+    )
+
     payload = {
         "model": OPENROUTER_MODEL,
-        "messages": [
-            {"role": "system", "content": "Você é um contador de histórias infantis criativas, educativas e com moral positiva."},
-            {"role": "user", "content": "Crie uma história infantil curta e divertida com uma moral no final."}
-        ]
+        "prompt": prompt,
+        "max_tokens": 500,
+        "temperature": 0.8
     }
 
     try:
         response = requests.post(OPENROUTER_BASE_URL, json=payload, headers=headers)
         response.raise_for_status()
         data = response.json()
-        return data["choices"][0]["message"]["content"]
+        return data["choices"][0]["text"]
     except Exception as e:
         print(f"[ERRO gerar_conto] {e}")
         return None
