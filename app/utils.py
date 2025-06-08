@@ -6,6 +6,12 @@ from config.twilio import enviar_whatsapp
 from config.planilha import adicionar_historico
 from config.email import enviar_email
 
+try:
+    from elevenlabs import generate, save
+    ELEVENLABS_OK = True
+except ImportError:
+    ELEVENLABS_OK = False
+
 def enviar_conto_diario():
     try:
         # 1. Gerar história com OpenRouter (GPT)
@@ -31,20 +37,35 @@ def enviar_conto_diario():
             print("[ERRO] OpenRouter falhou:", resposta.status_code, resposta.text)
             return {"status": "erro_openrouter"}
 
-        json_data = resposta.json()
-        historia = json_data["choices"][0]["message"]["content"].strip()
+        historia = resposta.json()["choices"][0]["message"]["content"].strip()
         print("[OK] História gerada.")
 
-        # 2. Enviar história como texto pelo WhatsApp
         numero = os.getenv("WHATSAPP_NUMBER")
-        enviado = enviar_whatsapp(numero, historia)
+
+        # 2. Tenta gerar e enviar o áudio se possível
+        caminho_arquivo = None
+        if ELEVENLABS_OK:
+            try:
+                audio = generate(
+                    api_key=os.getenv("ELEVENLABS_API_KEY"),
+                    voice="OB6x7EbXYlhG4DDTB1XU",  # Voz PT-BR infantil
+                    text=historia
+                )
+                caminho_arquivo = "static/audio.mp3"
+                save(audio, caminho_arquivo)
+                print("[OK] Áudio gerado.")
+            except Exception as e:
+                print("[AVISO] Falha ao gerar/enviar áudio. Segue com texto apenas.")
+                caminho_arquivo = None
+
+        # 3. Envia WhatsApp (com ou sem áudio)
+        enviado = enviar_whatsapp(numero, historia, caminho_arquivo)
         print("[OK] WhatsApp enviado.")
 
-        # 3. Registrar na planilha (simulado)
+        # 4. Histórico e e-mail simulados
         adicionar_historico(historia)
         print("[OK] Histórico salvo.")
 
-        # 4. Enviar e-mail de notificação (simulado)
         enviar_email("História do dia enviada com sucesso!", historia)
         print("[OK] E-mail enviado.")
 
