@@ -33,11 +33,15 @@ def enviar_conto_diario():
 
         resposta = requests.post(url, headers=headers, json=data)
 
+        print("[DEBUG] OpenRouter status:", resposta.status_code)
+        print("[DEBUG] OpenRouter body:", resposta.text)
+
         if not resposta.ok:
             print("[ERRO] OpenRouter falhou:", resposta.status_code, resposta.text)
             return {"status": "erro_openrouter"}
 
-        historia = resposta.json()["choices"][0]["message"]["content"].strip()
+        json_data = resposta.json()
+        historia = json_data["choices"][0]["message"]["content"].strip()
         print("[OK] História gerada.")
 
         numero = os.getenv("WHATSAPP_NUMBER")
