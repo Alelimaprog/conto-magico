@@ -9,8 +9,8 @@ router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL")
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL")
+OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL")  # deve ser https://openrouter.ai/api/v1/completions
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL")        # deve ser mistralai/mistral-7b-instruct
 
 def gerar_conto():
     headers = {
@@ -19,15 +19,16 @@ def gerar_conto():
     }
 
     prompt = (
-        "Crie uma história infantil curta, divertida e com uma moral positiva no final. "
-        "A história deve ter no máximo 3 parágrafos."
+        "Você é um contador de histórias infantis. "
+        "Crie uma história curta, divertida e com uma moral no final. "
+        "Use linguagem simples, personagens cativantes e um enredo com lição positiva."
     )
 
     payload = {
         "model": OPENROUTER_MODEL,
         "prompt": prompt,
         "max_tokens": 500,
-        "temperature": 0.9
+        "temperature": 0.8
     }
 
     try:
@@ -45,7 +46,9 @@ def enviar(request: Request):
     if not historia:
         return templates.TemplateResponse("erro.html", {"request": request, "mensagem": "Erro ao gerar história."})
 
-    texto = f"📖 História do dia do Conto Mágico!\n\n{historia}"
+    texto = f"""📖 História do dia do Conto Mágico!
+
+{historia}"""
 
     sucesso = enviar_mensagem_whatsapp(texto)
     if sucesso:
