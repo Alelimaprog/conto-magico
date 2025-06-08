@@ -14,3 +14,5 @@ async def homepage(request: Request):
 async def enviar():
     sucesso = enviar_conto_diario()
     return {"status": "ok" if sucesso else "erro"}
+from teste_whatsapp import router as teste_router
+router.include_router(teste_router)
