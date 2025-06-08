@@ -1,34 +1,26 @@
 import os
-import requests
+from twilio.rest import Client
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL")
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL")
+# Carrega as variáveis de ambiente
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM")  # Ex: "whatsapp:+14155238886"
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER")            # Ex: "whatsapp:+55..."
 
-def gerar_conto():
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "model": OPENROUTER_MODEL,
-        "messages": [
-            {
-                "role": "system",
-                "content": "Você é um contador de histórias infantis criativas, educativas e com moral."
-            },
-            {
-                "role": "user",
-                "content": "Crie uma história infantil completa, com começo, meio e fim, incluindo uma moral no final."
-            }
-        ]
-    }
+def enviar_mensagem_whatsapp(texto: str):
+    if not all([TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM, WHATSAPP_NUMBER]):
+        print("[ERRO] Variáveis Twilio não configuradas corretamente")
+        return False
 
     try:
-        resposta = requests.post(OPENROUTER_BASE_URL, headers=headers, json=payload)
-        resposta.raise_for_status()
-        return resposta.json()["choices"][0]["message"]["content"]
+        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        message = client.messages.create(
+            body=texto,
+            from_=TWILIO_WHATSAPP_FROM,
+            to=WHATSAPP_NUMBER if WHATSAPP_NUMBER.startswith("whatsapp:") else f"whatsapp:{WHATSAPP_NUMBER}"
+        )
+        print(f"[SUCESSO] Mensagem enviada. SID: {message.sid}")
+        return True
     except Exception as e:
-        print(f"[ERRO gerar_conto] {e}")
-        raise
+        print(f"[ERRO] Falha ao enviar mensagem: {e}")
+        return False
