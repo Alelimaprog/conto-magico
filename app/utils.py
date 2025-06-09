@@ -1,32 +1,31 @@
-import requests
 import os
-from dotenv import load_dotenv
+import requests
 
-load_dotenv()
+def texto_para_audio(texto):
+    ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+    voice_id = "EXAVITQu4vr4xnSDxMaL"  # Voz padrão brasileira
+    model_id = "eleven_multilingual_v2"
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{{voice_id}}/stream"
 
-ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
-VOICE_ID = "ErXwobaYiN019PkySvjV"  # Antonio - voz padrão pt-br da ElevenLabs
-
-def texto_para_audio(texto: str) -> str:
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}/stream"
     headers = {
         "xi-api-key": ELEVENLABS_API_KEY,
         "Content-Type": "application/json"
     }
+
     payload = {
         "text": texto,
-        "model_id": "eleven_monolingual_v1",
+        "model_id": model_id,
         "voice_settings": {
-            "stability": 0.4,
+            "stability": 0.5,
             "similarity_boost": 0.75
         }
     }
 
-    response = requests.post(url, headers=headers, json=payload)
+    response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
 
-    audio_path = "app/static/audio.mp3"
-    os.makedirs(os.path.dirname(audio_path), exist_ok=True)
+    audio_path = "static/audio.mp3"
     with open(audio_path, "wb") as f:
         f.write(response.content)
-    return "/" + audio_path
+
+    return audio_path
