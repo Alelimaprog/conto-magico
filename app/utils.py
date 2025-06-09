@@ -1,34 +1,32 @@
-import os
 import requests
-from datetime import datetime
+import os
+from dotenv import load_dotenv
 
-ELEVEN_API_KEY = os.getenv("ELEVENLABS_API_KEY")
-ELEVEN_VOICE_ID = "OB6x7EbXYlhG4DDTB1XU"
+load_dotenv()
 
-def texto_para_audio(texto):
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVEN_VOICE_ID}/stream"
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+VOICE_ID = "ErXwobaYiN019PkySvjV"  # Antonio - voz padrão pt-br da ElevenLabs
 
+def texto_para_audio(texto: str) -> str:
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}/stream"
     headers = {
-        "Accept": "audio/mpeg",
-        "Content-Type": "application/json",
-        "xi-api-key": ELEVEN_API_KEY
+        "xi-api-key": ELEVENLABS_API_KEY,
+        "Content-Type": "application/json"
     }
-
     payload = {
         "text": texto,
-        "model_id": "eleven_multilingual_v2",
+        "model_id": "eleven_monolingual_v1",
         "voice_settings": {
-            "stability": 0.5,
+            "stability": 0.4,
             "similarity_boost": 0.75
         }
     }
 
-    response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, headers=headers, json=payload)
     response.raise_for_status()
 
-    filename = f"audio_{datetime.now().strftime('%Y%m%d%H%M%S')}.mp3"
-    filepath = os.path.join("/tmp", filename)
-    with open(filepath, "wb") as f:
+    audio_path = "app/static/audio.mp3"
+    os.makedirs(os.path.dirname(audio_path), exist_ok=True)
+    with open(audio_path, "wb") as f:
         f.write(response.content)
-
-    return filepath
+    return "/" + audio_path
