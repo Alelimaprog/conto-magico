@@ -20,18 +20,22 @@ def gerar_conto():
 
     payload = {
         "model": OPENROUTER_MODEL,
-        "prompt": "Conte uma história infantil curta com uma moral positiva no final.",
-        "max_tokens": 500
+        "messages": [
+            {"role": "system", "content": "Você é um contador de histórias infantis criativas, educativas e com moral positiva."},
+            {"role": "user", "content": "Crie uma história infantil curta e divertida com uma moral no final."}
+        ]
     }
 
     try:
         response = requests.post(OPENROUTER_BASE_URL, json=payload, headers=headers)
         response.raise_for_status()
         data = response.json()
-        return data["choices"][0]["text"].strip()
+        return data["choices"][0]["message"]["content"]
+    except requests.exceptions.HTTPError as e:
+        print(f"[ERRO gerar_conto] {e.response.status_code} - {e.response.text}")
     except Exception as e:
         print(f"[ERRO gerar_conto] {e}")
-        return None
+    return None
 
 @router.get("/enviar", response_class=HTMLResponse)
 def enviar(request: Request):
