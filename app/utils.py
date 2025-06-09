@@ -1,51 +1,41 @@
-import os
+
 import requests
-from twilio.rest import Client
-from dotenv import load_dotenv
+import os
 
-load_dotenv()
+def enviar_mensagem_whatsapp(mensagem, numero_destino):
+    from twilio.rest import Client
+    account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+    auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+    client = Client(account_sid, auth_token)
 
-TWILIO_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_FROM = os.getenv("TWILIO_WHATSAPP_FROM")
-WHATSAPP_TO = os.getenv("WHATSAPP_NUMBER")
-
-ELEVEN_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+    mensagem = client.messages.create(
+        from_='whatsapp:' + os.getenv("TWILIO_PHONE_NUMBER"),
+        body=mensagem,
+        to='whatsapp:' + numero_destino
+    )
+    return mensagem.sid
 
 def texto_para_audio(texto):
-    url = "https://api.elevenlabs.io/v1/text-to-speech/OycwMuF6bqG3c4WhgKOJ/stream"
+    api_key = os.getenv("ELEVEN_API_KEY")
+    voice_id = "OB6x7EbXYlhG4DDTB1XU"
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream"
     headers = {
-        "xi-api-key": ELEVEN_API_KEY,
+        "xi-api-key": api_key,
         "Content-Type": "application/json"
     }
-    payload = {
+    data = {
         "text": texto,
-        "model_id": "eleven_monolingual_v1",
         "voice_settings": {
             "stability": 0.5,
             "similarity_boost": 0.5
         }
     }
 
-    response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, headers=headers, json=data)
     response.raise_for_status()
 
-    path = "/tmp/historia.mp3"
-    with open(path, "wb") as f:
+    audio_path = "/tmp/audio.mp3"
+    with open(audio_path, "wb") as f:
         f.write(response.content)
-    return path
 
-def enviar_mensagem_whatsapp(arquivo, tipo="audio"):
-    try:
-        client = Client(TWILIO_SID, TWILIO_TOKEN)
-        message = client.messages.create(
-            from_=TWILIO_FROM,
-            to=WHATSAPP_TO,
-            media_url="https://flushimport.com.br/audio/historia.mp3" if tipo == "audio" else None,
-            body=None if tipo == "audio" else arquivo
-        )
-        print("Mensagem enviada:", message.sid)
-        return True
-    except Exception as e:
-        print("[ERRO] Falha ao enviar mensagem:", e)
-        return False
+    return audio_path
