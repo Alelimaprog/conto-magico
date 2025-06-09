@@ -18,17 +18,10 @@ def gerar_conto():
         "Content-Type": "application/json"
     }
 
-    prompt = (
-        "Conte uma história infantil curta, divertida e com uma moral no final. "
-        "A história deve ser original, envolver animais ou crianças, e ter um enredo com aprendizado positivo."
-    )
-
     payload = {
         "model": OPENROUTER_MODEL,
-        "prompt": prompt,
-        "max_tokens": 500,
-        "temperature": 0.9,
-        "stop": ["\n\n"]
+        "prompt": "Conte uma história infantil curta com uma moral positiva no final.",
+        "max_tokens": 500
     }
 
     try:
