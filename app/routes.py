@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from app.utils import enviar_mensagem_whatsapp
+from app.utils import enviar_mensagem_whatsapp, texto_para_audio
 import os
 import requests
 
@@ -17,7 +17,6 @@ def gerar_conto():
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json"
     }
-
     payload = {
         "model": OPENROUTER_MODEL,
         "messages": [
@@ -25,7 +24,6 @@ def gerar_conto():
             {"role": "user", "content": "Crie uma história infantil curta e divertida com uma moral no final."}
         ]
     }
-
     try:
         response = requests.post(OPENROUTER_BASE_URL, json=payload, headers=headers)
         response.raise_for_status()
@@ -41,12 +39,9 @@ def enviar(request: Request):
     if not historia:
         return templates.TemplateResponse("erro.html", {"request": request, "mensagem": "Erro ao gerar história."})
 
-    texto = f"""📖 História do dia do Conto Mágico!
+    audio_path = texto_para_audio(historia)
+    sucesso = enviar_mensagem_whatsapp(audio_path, tipo="audio")
 
-{historia}"""
-    texto = texto[:1500]  # limita o tamanho total para evitar erro do Twilio
-
-    sucesso = enviar_mensagem_whatsapp(texto)
     if sucesso:
         return templates.TemplateResponse("enviado.html", {"request": request})
     else:
