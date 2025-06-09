@@ -31,11 +31,9 @@ def gerar_conto():
         response.raise_for_status()
         data = response.json()
         return data["choices"][0]["message"]["content"]
-    except requests.exceptions.HTTPError as e:
-        print(f"[ERRO gerar_conto] {e.response.status_code} - {e.response.text}")
     except Exception as e:
         print(f"[ERRO gerar_conto] {e}")
-    return None
+        return None
 
 @router.get("/enviar", response_class=HTMLResponse)
 def enviar(request: Request):
@@ -46,6 +44,7 @@ def enviar(request: Request):
     texto = f"""📖 História do dia do Conto Mágico!
 
 {historia}"""
+    texto = texto[:1500]  # limita o tamanho total para evitar erro do Twilio
 
     sucesso = enviar_mensagem_whatsapp(texto)
     if sucesso:
