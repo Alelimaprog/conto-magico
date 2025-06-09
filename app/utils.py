@@ -1,57 +1,34 @@
 import os
 import requests
+from datetime import datetime
 
-from twilio.rest import Client
-
-def enviar_mensagem_whatsapp(mensagem, numero_destino, audio_path=None):
-    account_sid = os.getenv("TWILIO_ACCOUNT_SID")
-    auth_token = os.getenv("TWILIO_AUTH_TOKEN")
-    twilio_whatsapp_number = os.getenv("TWILIO_WHATSAPP_NUMBER")
-
-    client = Client(account_sid, auth_token)
-
-    if audio_path:
-        message = client.messages.create(
-            body=mensagem,
-            from_=f"whatsapp:{twilio_whatsapp_number}",
-            to=f"whatsapp:{numero_destino}",
-        )
-        media = client.messages.create(
-            media_url=[audio_path],
-            from_=f"whatsapp:{twilio_whatsapp_number}",
-            to=f"whatsapp:{numero_destino}",
-        )
-        return media.sid
-    else:
-        message = client.messages.create(
-            body=mensagem,
-            from_=f"whatsapp:{twilio_whatsapp_number}",
-            to=f"whatsapp:{numero_destino}",
-        )
-        return message.sid
+ELEVEN_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+ELEVEN_VOICE_ID = "OB6x7EbXYlhG4DDTB1XU"
 
 def texto_para_audio(texto):
-    url = "https://api.elevenlabs.io/v1/text-to-speech/OB6x7EbXYlhG4DDTB1XU/stream"
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVEN_VOICE_ID}/stream"
 
     headers = {
-        "xi-api-key": "sk_eee82b6166601c7cf13d53450b6071f0e424956a78715137",
-        "Content-Type": "application/json"
+        "Accept": "audio/mpeg",
+        "Content-Type": "application/json",
+        "xi-api-key": ELEVEN_API_KEY
     }
 
-    body = {
+    payload = {
         "text": texto,
+        "model_id": "eleven_multilingual_v2",
         "voice_settings": {
             "stability": 0.5,
             "similarity_boost": 0.75
         }
     }
 
-    response = requests.post(url, headers=headers, json=body, stream=True)
+    response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
 
-    output_path = "app/static/audio/audio.mp3"
-    with open(output_path, "wb") as f:
-        for chunk in response.iter_content(chunk_size=4096):
-            f.write(chunk)
+    filename = f"audio_{datetime.now().strftime('%Y%m%d%H%M%S')}.mp3"
+    filepath = os.path.join("/tmp", filename)
+    with open(filepath, "wb") as f:
+        f.write(response.content)
 
-    return "/" + output_path
+    return filepath
