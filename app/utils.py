@@ -1,41 +1,26 @@
 
 import requests
-import os
-
-def enviar_mensagem_whatsapp(mensagem, numero_destino):
-    from twilio.rest import Client
-    account_sid = os.getenv("TWILIO_ACCOUNT_SID")
-    auth_token = os.getenv("TWILIO_AUTH_TOKEN")
-    client = Client(account_sid, auth_token)
-
-    mensagem = client.messages.create(
-        from_='whatsapp:' + os.getenv("TWILIO_PHONE_NUMBER"),
-        body=mensagem,
-        to='whatsapp:' + numero_destino
-    )
-    return mensagem.sid
 
 def texto_para_audio(texto):
-    api_key = os.getenv("ELEVEN_API_KEY")
-    voice_id = "OB6x7EbXYlhG4DDTB1XU"
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream"
+    url = "https://api.elevenlabs.io/v1/text-to-speech/OB6x7EbXYlhG4DDTB1XU/stream"
     headers = {
-        "xi-api-key": api_key,
+        "accept": "audio/mpeg",
+        "xi-api-key": "sk_eee82b6166601c7cf13d53450b6071f0e424956a78715137",
         "Content-Type": "application/json"
     }
-    data = {
+    payload = {
         "text": texto,
+        "model_id": "eleven_monolingual_v1",
         "voice_settings": {
             "stability": 0.5,
-            "similarity_boost": 0.5
+            "similarity_boost": 0.75
         }
     }
 
-    response = requests.post(url, headers=headers, json=data)
+    response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
 
     audio_path = "/tmp/audio.mp3"
     with open(audio_path, "wb") as f:
         f.write(response.content)
-
     return audio_path
